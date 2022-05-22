@@ -1,0 +1,30 @@
+package org.lmmarise.rpc.protocol;
+
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * 对 RPC 协议头进行抽象。
+ *
+ * <pre>
+ * +---------------------------------------------------------------+
+ * | 魔数 2byte | 协议版本号 1byte | 序列化算法 1byte | 报文类型 1byte  |
+ * +---------------------------------------------------------------+
+ * | 状态 1byte |        消息 ID 8byte     |      数据长度 4byte      |
+ * +---------------------------------------------------------------+
+ * <pre/>
+ *
+ * @author lmmarise.j@gmail.com
+ * @since 2022/5/22 22:53
+ */
+@Data
+public class MsgHeader implements Serializable {
+    private short magic;        // 魔数
+    private byte version;       // 协议版本号
+    private byte serialization; // 序列化算法
+    private byte msgType;       // 报文类型
+    private byte status;        // 状态
+    private long requestId;     // 消息 ID
+    private int msgLen;         // 数据长度
+}

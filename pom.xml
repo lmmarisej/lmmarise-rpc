@@ -46,37 +46,37 @@
         <dependencies>
             <!--当前项目模块-->
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-consumer</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-registry</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-protocol</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-facade</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.mini.rpc</groupId>
+                <groupId>org.lmmarise.rpc</groupId>
                 <artifactId>rpc-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
