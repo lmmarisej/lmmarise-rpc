@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 一个 RPC 响应的抽象。
+ * 一次 RPC 响应的抽象。
  *
  * @author lmmarise.j@gmail.com
  * @since 2022/5/22 21:44

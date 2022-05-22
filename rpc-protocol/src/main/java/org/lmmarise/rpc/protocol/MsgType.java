@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * 对 RPC 传输协议报文类型进行描述。
  *
- * @see MsgHeader#getMsgType()
+ * @see MsgHeader#getMsgType() 告诉对方，本次报文中负载部分的类型，根据不同的类型进行采取不同的策略，进行反序列化。
  *
  * @author lmmarise.j@gmail.com
  * @since 2022/5/22 23:16
