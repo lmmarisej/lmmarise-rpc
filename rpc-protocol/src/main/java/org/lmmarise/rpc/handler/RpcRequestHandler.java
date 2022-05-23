@@ -15,7 +15,9 @@ import org.springframework.cglib.reflect.FastClass;
 import java.util.Map;
 
 /**
- * RPC 请求处理，接收外部网络请求，本地进行业务处理，最后对外响应。
+ * 请求处理器，基于 Netty 处理来自客户端的 RPC 请求报文。
+ *
+ * 根据客户端发出的 RPC 请求信息，调用本地方法执行，响应执行结果。
  *
  * @author lmmarise.j@gmail.com
  * @since 2022/5/23 01:35
@@ -23,7 +25,7 @@ import java.util.Map;
 @Slf4j
 public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcRequest>> {
 
-    private final Map<String, Object> rpcServiceMap;        // 记录对外暴露的服务
+    private final Map<String, Object> rpcServiceMap;        // 记录对外暴露的服务，客户端可以的远程服务都汇聚于此
 
     public RpcRequestHandler(Map<String, Object> rpcServiceMap) {
         this.rpcServiceMap = rpcServiceMap;
