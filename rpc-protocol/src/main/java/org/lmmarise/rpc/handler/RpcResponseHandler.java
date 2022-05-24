@@ -15,6 +15,9 @@ import org.lmmarise.rpc.protocol.RpcProtocol;
  */
 public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
 
+    /**
+     * 接收响应，根据响应 id 将响应结果写入对应 Promise。
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcResponse> msg) {
         long requestId = msg.getHeader().getRequestId();

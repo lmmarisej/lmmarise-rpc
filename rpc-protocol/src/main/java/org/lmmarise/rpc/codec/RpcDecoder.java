@@ -62,7 +62,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
         MsgType msgTypeEnum = MsgType.findByType(msgType);          // 数据包类型
         if (msgTypeEnum == null) {
-            return;                     // 不支持的请求类型，读指针已读完，不进行处理，表示直接丢弃
+            return;                     // 不支持的请求类型，读指针已读完，这里不复位也不进行处理，表示直接丢弃
         }
 
         MsgHeader header = new MsgHeader();         // RPC 报文头用 Java 实例来描述

@@ -7,7 +7,7 @@ package org.lmmarise.rpc.protocol;
  * @since 2022/5/22 23:29
  */
 public class ProtocolConstants {
-    public static final int HEADER_TOTAL_LEN = 18;
-    public static final short MAGIC = 0x10;
-    public static final byte VERSION = 0x1;
+    public static final int HEADER_TOTAL_LEN = 18;      // 报文头长度
+    public static final short MAGIC = 0x10;             // 魔数
+    public static final byte VERSION = 0x1;             // 协议版本号
 }
