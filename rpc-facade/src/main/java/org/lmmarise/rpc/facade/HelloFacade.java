@@ -1,6 +1,7 @@
 package org.lmmarise.rpc.facade;
 
-import java.util.concurrent.Future;
+import org.lmmarise.rpc.common.RpcFuture;
+import org.lmmarise.rpc.common.RpcResponse;
 
 /**
  * @author lmmarise.j@gmail.com
@@ -10,6 +11,6 @@ public interface HelloFacade {
 
     String hello(String name);
 
-    Future<String> work(String thing);
+    RpcFuture<RpcResponse> homework(String thing);
 
 }
