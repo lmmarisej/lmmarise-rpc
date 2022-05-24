@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 一个 RPC 请求的抽象。
+ * 一个 RPC 请求报文体，用于抽象被调用的方法。
  *
  * @author lmmarise.j@gmail.com
  * @since 2022/5/22 21:27
