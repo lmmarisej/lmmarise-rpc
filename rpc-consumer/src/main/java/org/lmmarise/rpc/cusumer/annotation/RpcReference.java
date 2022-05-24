@@ -31,7 +31,8 @@ public @interface RpcReference {
 
     long timeout() default 5000;
 
-    String scope() default BeanDefinition.SCOPE_SINGLETON;
+    @AliasFor(annotation = Autowired.class)
+    boolean required() default true;
 
     String scope() default BeanDefinition.SCOPE_SINGLETON;      // 作用域，注意：多例模式不能在单例 bean 中引用
 }
