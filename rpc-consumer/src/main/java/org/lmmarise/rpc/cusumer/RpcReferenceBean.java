@@ -5,6 +5,7 @@ import org.lmmarise.rpc.provider.registry.RegistryFactory;
 import org.lmmarise.rpc.provider.registry.RegistryService;
 import org.lmmarise.rpc.provider.registry.RegistryType;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 
 import java.lang.reflect.Proxy;
 
@@ -30,10 +31,22 @@ public class RpcReferenceBean implements FactoryBean<Object> {
     private String registryAddress;
     private long timeout;
     private Object object;
+    private String scope;
 
     @Override
     public Object getObject() throws Exception {         // 为 getBean 生成 Bean 实例
-        return object;      // todo debug scope 范围是 Bean 实例 或者是 FactoryBean 又或者是 BeanDefinition
+        if (!isSingleton()) {
+            init();
+        }
+        return object;
+    }
+
+    /**
+     * 多例模式将不会缓存通过 getObject 生成的 RpcReferenceBean 实例。
+     */
+    @Override
+    public boolean isSingleton() {
+        return scope.equals(BeanDefinition.SCOPE_SINGLETON);
     }
 
     @Override
@@ -73,5 +86,9 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

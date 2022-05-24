@@ -3,6 +3,7 @@ package org.lmmarise.rpc.cusumer.annotation;
 import org.lmmarise.rpc.cusumer.RpcConsumerPostProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,10 +27,11 @@ public @interface RpcReference {
 
     String registryType() default "ZOOKEEPER";
 
-    String registryAddress() default "127.0.0.1:2181";
+    String registryAddress() default "127.0.0.1:2181";      // 指定注册中心默认地址
 
     long timeout() default 5000;
 
     String scope() default BeanDefinition.SCOPE_SINGLETON;
 
+    String scope() default BeanDefinition.SCOPE_SINGLETON;      // 作用域，注意：多例模式不能在单例 bean 中引用
 }
