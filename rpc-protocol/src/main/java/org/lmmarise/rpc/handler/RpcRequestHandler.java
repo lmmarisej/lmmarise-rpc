@@ -14,7 +14,7 @@ import org.lmmarise.rpc.protocol.RpcProtocol;
 import org.springframework.cglib.reflect.FastClass;
 
 import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 请求处理器，基于 Netty 处理来自客户端的 RPC 请求报文。
@@ -44,22 +44,28 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<R
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
         // 异步处理，避免阻塞 Netty I/O 线程
         RpcRequestProcessor.submitRequest(() -> {
+            // 以 RpcResponse 作为响应报文数据类型
             RpcProtocol<RpcResponse> resProtocol = new RpcProtocol<>();     // 构造一个报文，用于响应。报文由头、负载构成
-            RpcResponse response = new RpcResponse();       // 构造响应报文-负载
             MsgHeader header = protocol.getHeader();        // 请求报文-头，后面转为响应报文-头来使用，少量字段需要修改
             header.setMsgType((byte) MsgType.RESPONSE.getType());   // 响应报文-头-类型
-            try {
-                Object result = handle(protocol.getBody());     // 根据请求报文-负载中请求的方法名等信息，反射调用本地服务
-                response.setData(result);                       // 调用本地服务的返回值作为响应报文-负载-数据
 
-                header.setStatus((byte) MsgStatus.SUCCESS.getCode());   // 响应报文-头-状态
-                resProtocol.setHeader(header);      // 响应报文-头
-                resProtocol.setBody(response);      // 响应报文-负载
+            Object result;
+            RpcResponse response;       // 构造响应报文-负载
+            try {
+                result = handle(protocol.getBody());            // 根据请求报文-负载中请求的方法名等信息，反射调用本地服务
+                if (result instanceof RpcResponse) {
+                    response = (RpcResponse) result;
+                } else {
+                    response = new RpcResponse().setData(result);                   // 调用本地服务的返回值作为响应报文-负载-数据
+                }
+                header.setStatus((byte) MsgStatus.SUCCESS.getCode());               // 响应报文-头-状态
             } catch (Throwable throwable) {
-                header.setStatus((byte) MsgStatus.FAIL.getCode());  // 响应报文-头-状态
-                response.setMessage(throwable.toString());          // 响应报文-负载-失败信息
+                header.setStatus((byte) MsgStatus.FAIL.getCode());                  // 响应报文-头-状态
+                response = new RpcResponse().setMessage(throwable.toString());      // 响应报文-负载-失败信息
                 log.error("process request {} error", header.getRequestId(), throwable);
             }
+            resProtocol.setHeader(header);      // 响应报文-头
+            resProtocol.setBody(response);      // 响应报文-体
             ctx.writeAndFlush(resProtocol);     // 将响应报文写入缓冲区并发送
         });
     }
@@ -91,10 +97,9 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<R
         // todo 异步调用必须设置超时时间
 
         // 返回类型是 Future，必须先将 Future 中的值取出来再返回
-        if (result instanceof Future) {
-            return ((Future<?>) result).get();                      // 阻塞地取值
-        } else if (result instanceof RpcFuture) {
-            return ((RpcFuture<?>) result).getPromise().get();      // 阻塞地取值
+        if (result instanceof RpcFuture<?>) {
+            RpcFuture<?> rpcFuture = ((RpcFuture<?>) result);
+            return rpcFuture.getPromise().get(rpcFuture.getTimeout(), TimeUnit.MILLISECONDS);// 阻塞地取值
         }
         // 直接返回
         else {

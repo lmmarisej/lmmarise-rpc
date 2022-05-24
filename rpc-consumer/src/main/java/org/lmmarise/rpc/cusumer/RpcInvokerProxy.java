@@ -15,7 +15,6 @@ import org.lmmarise.rpc.serialization.SerializationTypeEnum;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -76,17 +75,15 @@ public class RpcInvokerProxy implements InvocationHandler {
         Class<?> returnType = method.getReturnType();
 
         // 构造获取响应的 Promise。请求的响应结果由 RpcResponseHandler 根据请求 id 写入 Promise
-        RpcFuture<RpcResponse> future = new RpcFuture<>(new DefaultPromise<>(new DefaultEventLoop()), timeout, returnType);
+        RpcFuture<RpcResponse> future = new RpcFuture<>(new DefaultPromise<>(new DefaultEventLoop()), timeout);
 
         // 将本次请求在本地的存根
         RpcRequestHolder.REQUEST_MAP.put(requestId, future);
         future = RpcRequestHolder.REQUEST_MAP.get(requestId);
 
         // 异步调用
-        if (Future.class.isAssignableFrom(returnType)) {
-            return future.getPromise();
-        } else if (RpcFuture.class.isAssignableFrom(returnType)) {
-            return future;
+        if (RpcFuture.class.isAssignableFrom(returnType)) {
+            return future;      // 不阻塞直接返回 future 引用，让使用者自己去阻塞获取
         }
         // 同步调用
         else {

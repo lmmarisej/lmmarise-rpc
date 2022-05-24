@@ -14,14 +14,9 @@ import lombok.Data;
 public class RpcFuture<T> {
     private Promise<T> promise;     // 用于异步调用结果的获取与写入
     private long timeout;           // 请求超时时间
-    private Class<?> returnType;    // 返回值类型
 
-    public RpcFuture() {
-    }
-
-    public RpcFuture(Promise<T> promise, long timeout, Class<?> returnType) {
+    public RpcFuture(Promise<T> promise, long timeout) {
         this.promise = promise;
         this.timeout = timeout;
-        this.returnType = returnType;
     }
 }
