@@ -10,16 +10,16 @@ public class RegistryFactory {
 
     private static volatile RegistryService registryService;
 
-    public static RegistryService getInstance(String registryAddr, RegistryType type) throws Exception {
+    public static RegistryService getInstance(String registryAddress, RegistryType type) throws Exception {
         if (registryService == null) {
             synchronized (RegistryFactory.class) {
                 if (registryService == null) {
                     switch (type) {
                         case ZOOKEEPER:
-                            registryService = new ZookeeperRegistryService(registryAddr);
+                            registryService = new ZookeeperRegistryService(registryAddress);
                             break;
                         case EUREKA:
-                            registryService = new EurekaRegistryService(registryAddr);
+                            registryService = new EurekaRegistryService(registryAddress);
                             break;
                     }
                 }

@@ -30,19 +30,19 @@ public class RegistryTest {
     @Test
     public void testAll() throws Exception {
         ServiceMeta serviceMeta1 = new ServiceMeta();
-        serviceMeta1.setServiceAddr("127.0.0.1");
+        serviceMeta1.setServiceAddress("127.0.0.1");
         serviceMeta1.setServicePort(8080);
         serviceMeta1.setServiceName("test1");
         serviceMeta1.setServiceVersion("1.0.0");
 
         ServiceMeta serviceMeta2 = new ServiceMeta();
-        serviceMeta2.setServiceAddr("127.0.0.2");
+        serviceMeta2.setServiceAddress("127.0.0.2");
         serviceMeta2.setServicePort(8080);
         serviceMeta2.setServiceName("test2");
         serviceMeta2.setServiceVersion("1.0.0");
 
         ServiceMeta serviceMeta3 = new ServiceMeta();
-        serviceMeta3.setServiceAddr("127.0.0.3");
+        serviceMeta3.setServiceAddress("127.0.0.3");
         serviceMeta3.setServicePort(8080);
         serviceMeta3.setServiceName("test3");
         serviceMeta3.setServiceVersion("1.0.0");

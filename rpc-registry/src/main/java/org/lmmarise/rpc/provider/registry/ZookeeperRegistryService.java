@@ -26,7 +26,7 @@ public class ZookeeperRegistryService implements RegistryService {
     public static final int MAX_RETRIES = 3;
     public static final String ZK_BASE_PATH = "/lmmarise_rpc";
 
-    private final ServiceDiscovery<ServiceMeta> serviceDiscovery;
+    private final ServiceDiscovery<ServiceMeta> serviceDiscovery;           // 由 ServiceDiscovery 完成服务的注册和发现
 
     public ZookeeperRegistryService(String registryAddr) throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(
@@ -34,7 +34,7 @@ public class ZookeeperRegistryService implements RegistryService {
                 new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES)
         );
 
-        client.start();
+        client.start();     // 创建完 CuratorFramework 实例之后需要调用 start() 进行启动
 
         JsonInstanceSerializer<ServiceMeta> serializer = new JsonInstanceSerializer<>(ServiceMeta.class);
 
@@ -48,13 +48,14 @@ public class ZookeeperRegistryService implements RegistryService {
     }
 
     /**
-     * 服务端：将 ServiceMeta 实例注册到 Zookeeper。
+     * 服务端：将服务元数据信息 ServiceMeta 发布到注册中心。
      */
     @Override
     public void register(ServiceMeta serviceMeta) throws Exception {
         ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance.<ServiceMeta>builder()
+                // 将 serviceMeta 注册到在 Zookeeper 中的该 key 上，在 Zookeeper 中一个 key 可以有多个 value，方便后续负载均衡
                 .name(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion()))
-                .address(serviceMeta.getServiceAddr())
+                .address(serviceMeta.getServiceAddress())
                 .port(serviceMeta.getServicePort())
                 .payload(serviceMeta)
                 .build();
@@ -69,7 +70,7 @@ public class ZookeeperRegistryService implements RegistryService {
         ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
                 .<ServiceMeta>builder()
                 .name(serviceMeta.getServiceName())
-                .address(serviceMeta.getServiceAddr())
+                .address(serviceMeta.getServiceAddress())
                 .port(serviceMeta.getServicePort())
                 .payload(serviceMeta)
                 .build();
@@ -92,6 +93,9 @@ public class ZookeeperRegistryService implements RegistryService {
         return null;
     }
 
+    /**
+     * 在系统退出的时候需要将初始化的实例进行关闭。
+     */
     @Override
     public void destroy() throws IOException {
         serviceDiscovery.close();
