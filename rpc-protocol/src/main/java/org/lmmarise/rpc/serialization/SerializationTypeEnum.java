@@ -9,6 +9,7 @@ import lombok.Getter;
  * @since 2022/5/23 00:55
  */
 public enum SerializationTypeEnum {
+    NON(0x00),
     HESSIAN(0x10),
     JSON(0x20);
 

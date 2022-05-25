@@ -13,4 +13,8 @@ public class RpcConstants {
      * {@code 例如：org.lmmarise.rpc.cusumer.RpcReferenceBean#init()}
      */
     public static final String INIT_METHOD_NAME = "init";
+
+    public static final int RPC_IDLE_OVERTIME = 6;          // 连接超时时间
+
+    public static final long RPC_PING_DELAY_TIME = 5;       // ping 间隔时间
 }

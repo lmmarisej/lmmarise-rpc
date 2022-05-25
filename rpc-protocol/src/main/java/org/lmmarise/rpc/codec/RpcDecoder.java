@@ -50,18 +50,21 @@ public class RpcDecoder extends ByteToMessageDecoder {
         byte msgType = in.readByte();
         byte status = in.readByte();
         long requestId = in.readLong();
-
         int dataLength = in.readInt();
+
         if (in.readableBytes() < dataLength) {      // 判断消息体是否接收完
             in.resetReaderIndex();                  // 读指针此时为距离上次标记点增加了 18（协议头的长度），重置为上次标记点的位置
             return;                                 // 读指针归为到协议头位置后，本次 I/O 触发事件不再处理
         }
+
         byte[] data = new byte[dataLength];
-        in.readBytes(data);                         // 数据拷贝到 Java 堆
+        if (dataLength > 0) {
+            in.readBytes(data);                         // 数据拷贝到 Java 堆
+        }
 
         MsgType msgTypeEnum = MsgType.findByType(msgType);          // 数据包类型
         if (msgTypeEnum == null) {
-            return;           // 读到的报文数据是不支持的报文类型。读完后，读指针既不复位，取出的数据也不处理，表示废弃这部分数据
+            return;           // 报文体数据是不支持的类型。读完后，读指针既不复位，取出的数据也不处理，表示废弃这部分数据
         }
 
         MsgHeader header = new MsgHeader();         // RPC 报文头用 Java 实例来描述
@@ -95,7 +98,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
                 }
                 break;
             case HEARTBEAT:
-                log.info("心跳请求：requestId = {}, status = {}", header.getRequestId(), header.getStatus());
+                log.info("收到心跳请求：from channel = {}, requestId = {}", ctx.channel(), requestId);
                 out.add(new HeartBeatData().setStatus(header.getStatus()));
                 break;
         }

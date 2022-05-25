@@ -13,7 +13,6 @@ import org.lmmarise.rpc.codec.RpcDecoder;
 import org.lmmarise.rpc.codec.RpcEncoder;
 import org.lmmarise.rpc.common.RpcServiceHelper;
 import org.lmmarise.rpc.common.ServiceMeta;
-import org.lmmarise.rpc.handler.RpcHeartBeatHandler;
 import org.lmmarise.rpc.handler.RpcIdleStateHandler;
 import org.lmmarise.rpc.handler.RpcRequestHandler;
 import org.lmmarise.rpc.provider.annotation.RpcService;
@@ -80,7 +79,6 @@ public class RpcProvider implements InitializingBean, BeanPostProcessor {
                                     .addLast(new RpcIdleStateHandler())     // 连接活跃检测
                                     .addLast(new RpcEncoder())      // RPC 协议报文编码器
                                     .addLast(new RpcDecoder())      // RPC 协议报文解码器
-                                    .addLast(new RpcHeartBeatHandler())     // 心跳处理
                                     .addLast(new RpcRequestHandler(rpcServiceMap));     // RPC 请求处理器
                         }
                     })

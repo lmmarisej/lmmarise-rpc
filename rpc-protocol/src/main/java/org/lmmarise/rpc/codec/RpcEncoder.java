@@ -35,8 +35,13 @@ public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> {
         out.writeByte(header.getMsgType());
         out.writeByte(header.getStatus());
         out.writeLong(header.getRequestId());
-        RpcSerialization rpcSerialization = SerializationFactory.getRpcSerialization(header.getSerialization());
-        byte[] data = rpcSerialization.serialize(msg.getBody());
+
+        RpcSerialization rpcSerialization = SerializationFactory.getRpcSerialization(header.getSerialization());    // 获得序列化方式
+
+        byte[] data = new byte[]{};         // 报文没有体，发一个空对象，数据长度设为 0
+        if (msg.getBody() != null) {
+            data = rpcSerialization.serialize(msg.getBody());
+        }
         out.writeInt(data.length);
         out.writeBytes(data);
     }

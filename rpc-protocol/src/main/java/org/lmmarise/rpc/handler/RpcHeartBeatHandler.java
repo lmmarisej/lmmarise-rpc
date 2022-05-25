@@ -2,6 +2,8 @@ package org.lmmarise.rpc.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.extern.slf4j.Slf4j;
+import org.lmmarise.rpc.common.RpcConstants;
 import org.lmmarise.rpc.common.RpcRequestHolder;
 import org.lmmarise.rpc.protocol.*;
 import org.lmmarise.rpc.serialization.SerializationTypeEnum;
@@ -14,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @author lmmarise.j@gmail.com
  * @since 2022/5/25 15:05
  */
+@Slf4j
 public class RpcHeartBeatHandler extends ChannelInboundHandlerAdapter {
 
     /**
@@ -31,12 +34,17 @@ public class RpcHeartBeatHandler extends ChannelInboundHandlerAdapter {
     private void doHeartBeatTask(ChannelHandlerContext ctx) {
         ctx.executor().schedule(() -> {
             if (ctx.channel().isActive()) {
-                ctx.writeAndFlush(buildHeartBeatData());
+                RpcProtocol<Void> voidRpcProtocol = buildHeartBeatData();
+                ctx.writeAndFlush(voidRpcProtocol);
+                log.info("发起心跳请求：to channel = {}, requestId = {}", ctx.channel(), voidRpcProtocol.getHeader().getRequestId());
                 doHeartBeatTask(ctx);
             }
-        }, 10, TimeUnit.SECONDS);
+        }, RpcConstants.RPC_PING_DELAY_TIME, TimeUnit.SECONDS);
     }
 
+    /**
+     * 心跳只发一个 RPC 协议报文头。
+     */
     private RpcProtocol<Void> buildHeartBeatData() {
         RpcProtocol<Void> protocol = new RpcProtocol<>();       // 构造一个心跳类型的请求
 
