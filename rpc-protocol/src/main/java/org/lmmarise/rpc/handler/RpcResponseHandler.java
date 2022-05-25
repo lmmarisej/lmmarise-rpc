@@ -1,5 +1,6 @@
 package org.lmmarise.rpc.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.lmmarise.rpc.common.RpcFuture;
@@ -13,6 +14,7 @@ import org.lmmarise.rpc.protocol.RpcProtocol;
  * @author lmmarise.j@gmail.com
  * @since 2022/5/23 14:03
  */
+@ChannelHandler.Sharable
 public class RpcResponseHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
 
     /**

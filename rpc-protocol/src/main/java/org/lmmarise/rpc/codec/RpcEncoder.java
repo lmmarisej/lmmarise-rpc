@@ -1,6 +1,7 @@
 package org.lmmarise.rpc.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.lmmarise.rpc.protocol.MsgHeader;
@@ -24,6 +25,7 @@ import org.lmmarise.rpc.serialization.SerializationFactory;
  * @author lmmarise.j@gmail.com
  * @since 2022/5/23 17:46
  */
+@ChannelHandler.Sharable
 public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> {
 
     @Override

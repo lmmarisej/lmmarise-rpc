@@ -1,5 +1,6 @@
 package org.lmmarise.rpc.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.lmmarise.rpc.protocol.MsgHeader;
 import org.lmmarise.rpc.protocol.MsgStatus;
 import org.lmmarise.rpc.protocol.MsgType;
 import org.lmmarise.rpc.protocol.RpcProtocol;
+import org.lmmarise.rpc.threadpool.RpcRequestThreadPoolProcessor;
 import org.springframework.cglib.reflect.FastClass;
 
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2022/5/23 01:35
  */
 @Slf4j
+@ChannelHandler.Sharable
 public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcRequest>> {
 
     private final Map<String, Object> rpcServiceMap;        // 记录对外暴露的服务，客户端可以的远程服务都汇聚于此
@@ -43,7 +46,7 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<R
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
         // 异步处理，避免阻塞 Netty I/O 线程
-        RpcRequestProcessor.submitRequest(() -> {
+        RpcRequestThreadPoolProcessor.submitRequest(() -> {
             // 以 RpcResponse 作为响应报文数据类型
             RpcProtocol<RpcResponse> resProtocol = new RpcProtocol<>();     // 构造一个报文，用于响应。报文由头、负载构成
             MsgHeader header = protocol.getHeader();                        // 请求报文-头，后面转为响应报文-头来使用，少量字段需要修改
