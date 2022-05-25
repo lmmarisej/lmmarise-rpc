@@ -6,6 +6,8 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.pool.ChannelPoolMap;
+import io.netty.channel.pool.FixedChannelPool;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +20,10 @@ import org.lmmarise.rpc.handler.RpcResponseHandler;
 import org.lmmarise.rpc.protocol.RpcProtocol;
 import org.lmmarise.rpc.provider.registry.RegistryService;
 
+import java.net.InetSocketAddress;
+
 /**
- * RPC 客户端，负责发起远程调用，请求远程服务并获取处理结果。
+ * RPC 客户端，负责发起远程调用，请求远程服务并获取响应报文。
  *
  * @author lmmarise.j@gmail.com
  * @since 2022/5/24 18:51

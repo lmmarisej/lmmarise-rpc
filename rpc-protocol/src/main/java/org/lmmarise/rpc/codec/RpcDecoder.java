@@ -3,12 +3,10 @@ package org.lmmarise.rpc.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.lmmarise.rpc.common.RpcRequest;
 import org.lmmarise.rpc.common.RpcResponse;
-import org.lmmarise.rpc.protocol.MsgHeader;
-import org.lmmarise.rpc.protocol.MsgType;
-import org.lmmarise.rpc.protocol.ProtocolConstants;
-import org.lmmarise.rpc.protocol.RpcProtocol;
+import org.lmmarise.rpc.protocol.*;
 import org.lmmarise.rpc.serialization.RpcSerialization;
 import org.lmmarise.rpc.serialization.SerializationFactory;
 
@@ -31,6 +29,7 @@ import java.util.List;
  * @author lmmarise.j@gmail.com
  * @since 2022/5/23 12:20
  */
+@Slf4j
 public class RpcDecoder extends ByteToMessageDecoder {
 
     @Override
@@ -62,7 +61,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
         MsgType msgTypeEnum = MsgType.findByType(msgType);          // 数据包类型
         if (msgTypeEnum == null) {
-            return;                     // 不支持的请求类型，读指针已读完，这里不复位也不进行处理，表示直接丢弃
+            return;           // 读到的报文数据是不支持的报文类型。读完后，读指针既不复位，取出的数据也不处理，表示废弃这部分数据
         }
 
         MsgHeader header = new MsgHeader();         // RPC 报文头用 Java 实例来描述
@@ -78,7 +77,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
         switch (msgTypeEnum) {
             case REQUEST:           // 本次数据包为客户端请求，将请求体反序列化到 Java RpcRequest 对象
-                RpcRequest request = rpcSerialization.deserialize(data, RpcRequest.class);
+                RpcRequest request = rpcSerialization.deserialize(data, RpcRequest.class);          // 获取报文体，反序列化
                 if (request != null) {
                     RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();
                     protocol.setHeader(header);
@@ -96,7 +95,8 @@ public class RpcDecoder extends ByteToMessageDecoder {
                 }
                 break;
             case HEARTBEAT:
-                // TODO
+                log.info("心跳请求：requestId = {}, status = {}", header.getRequestId(), header.getStatus());
+                out.add(new HeartBeatData().setStatus(header.getStatus()));
                 break;
         }
     }

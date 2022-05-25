@@ -46,8 +46,8 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<R
         RpcRequestProcessor.submitRequest(() -> {
             // 以 RpcResponse 作为响应报文数据类型
             RpcProtocol<RpcResponse> resProtocol = new RpcProtocol<>();     // 构造一个报文，用于响应。报文由头、负载构成
-            MsgHeader header = protocol.getHeader();        // 请求报文-头，后面转为响应报文-头来使用，少量字段需要修改
-            header.setMsgType((byte) MsgType.RESPONSE.getType());   // 响应报文-头-类型
+            MsgHeader header = protocol.getHeader();                        // 请求报文-头，后面转为响应报文-头来使用，少量字段需要修改
+            header.setMsgType((byte) MsgType.RESPONSE.getType());           // 响应报文-头-类型
 
             Object result;
             RpcResponse response;       // 构造响应报文-负载
