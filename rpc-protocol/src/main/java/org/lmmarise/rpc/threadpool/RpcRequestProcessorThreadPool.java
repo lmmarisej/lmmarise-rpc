@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author lmmarise.j@gmail.com
  * @since 2022/5/23 01:15
  */
-public class RpcRequestThreadPoolProcessor {
+public class RpcRequestProcessorThreadPool {
 
     /**
      * 延迟构建线程池。

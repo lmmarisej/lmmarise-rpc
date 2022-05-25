@@ -1,7 +1,6 @@
 package org.lmmarise.rpc.codec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ import java.util.List;
  * @since 2022/5/23 12:20
  */
 @Slf4j
-@ChannelHandler.Sharable
 public class RpcDecoder extends ByteToMessageDecoder {
 
     @Override

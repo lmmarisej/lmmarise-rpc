@@ -15,7 +15,9 @@ import org.lmmarise.rpc.serialization.SerializationTypeEnum;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 方法代理处理器，负责处理客户端进行的远程调用，屏蔽远程访问的细节。
@@ -28,6 +30,8 @@ public class RpcInvokerProxy implements InvocationHandler {
     private final String serviceVersion;
     private final long timeout;
     private final RegistryService registryService;
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     public RpcInvokerProxy(String serviceVersion, long timeout, RegistryService registryService) {
         this.serviceVersion = serviceVersion;
@@ -66,28 +70,22 @@ public class RpcInvokerProxy implements InvocationHandler {
         // 报文构造完成
         protocol.setBody(request);
 
-        // 启动本地网络服务，发起 RPC 请求
-        RpcConsumer rpcConsumer = new RpcConsumer();
-        rpcConsumer.sendRequest(protocol, this.registryService);
-
-        // 处理返回结果
-
         Class<?> returnType = method.getReturnType();
 
-        // 构造获取响应的 Promise。请求的响应结果由 RpcResponseHandler 根据请求 id 写入 Promise
         RpcFuture<RpcResponse> future = new RpcFuture<>(new DefaultPromise<>(new DefaultEventLoop()), timeout);
+        RpcRequestHolder.REQUEST_MAP.put(requestId, future);                // 将本次请求在本地的存根，响应结果由 RpcResponseHandler 接收并写入
 
-        // 将本次请求在本地的存根
-        RpcRequestHolder.REQUEST_MAP.put(requestId, future);
-        future = RpcRequestHolder.REQUEST_MAP.get(requestId);
-
+        lock.lock();
         // 异步调用
         if (RpcFuture.class.isAssignableFrom(returnType)) {
-            return future;      // 不阻塞直接返回 future 引用，让使用者自己去阻塞获取
-        }
-        // 同步调用
-        else {
+            RpcConsumer.INSTANCE.sendRequest(protocol, this.registryService);   // 启动本地网络服务，发起 RPC 请求
+            return future;                                                      // 不阻塞直接返回 future 引用，让使用者自己去阻塞获取
+        } else try {
+            // 同步调用
+            RpcConsumer.INSTANCE.sendRequest(protocol, this.registryService);   // 启动本地网络服务，发起 RPC 请求
             return future.getPromise().get(future.getTimeout(), TimeUnit.MILLISECONDS).getData();
+        } finally {
+            lock.unlock();
         }
     }
 }

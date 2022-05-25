@@ -1,38 +1,46 @@
 package org.lmmarise.rpc.cusumer.controller;
 
-import org.lmmarise.rpc.common.RpcResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.lmmarise.rpc.cusumer.annotation.RpcReference;
 import org.lmmarise.rpc.facade.HelloFacade;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 /**
  * @author lmmarise.j@gmail.com
  * @since 2022/5/24 22:12
  */
 @RestController
+@Slf4j
 //@Scope(value = BeanDefinition.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class HelloController {
+
+    private static final ExecutorService executor = new ThreadPoolExecutor(16, 32,
+            1L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(100000),
+            new ThreadPoolExecutor.DiscardPolicy()
+    );
 
     @SuppressWarnings({"SpringJavaAutowiredFieldsWarningInspection", "SpringJavaInjectionPointsAutowiringInspection"})
     @RpcReference(serviceVersion = "1.0.0", timeout = 3000)
     private HelloFacade helloFacade;
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public String sayHello() {
-        return helloFacade.hello("rpc sayHello");
+    public void sayHello() {
+        log.info(helloFacade.hello("rpc sayHello"));
     }
 
     @RequestMapping(value = "/homework", method = RequestMethod.GET)
-    public String homework() throws ExecutionException, InterruptedException {
-        RpcResponse rpcResponse = helloFacade.homework("rpc homework").getPromise().get();
-        if (rpcResponse.getData() != null) {
-            return (String) rpcResponse.getData();
-        } else {
-            return rpcResponse.getMessage();
-        }
+    public void homework() {
+        executor.submit(() -> {
+            try {
+                log.info(helloFacade.homework("rpc homework").getPromise().get().toString());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
