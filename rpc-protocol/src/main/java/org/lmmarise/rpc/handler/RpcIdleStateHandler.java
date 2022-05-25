@@ -1,5 +1,6 @@
 package org.lmmarise.rpc.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2022/5/25 15:03
  */
 @Slf4j
+@ChannelHandler.Sharable
 public class RpcIdleStateHandler extends IdleStateHandler {
 
     /**

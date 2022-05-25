@@ -1,5 +1,6 @@
 package org.lmmarise.rpc.handler;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2022/5/25 15:05
  */
 @Slf4j
+@ChannelHandler.Sharable
 public class RpcHeartBeatHandler extends ChannelInboundHandlerAdapter {
 
     /**

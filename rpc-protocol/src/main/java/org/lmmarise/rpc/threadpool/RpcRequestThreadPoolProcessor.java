@@ -1,4 +1,4 @@
-package org.lmmarise.rpc.handler;
+package org.lmmarise.rpc.threadpool;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
  * @author lmmarise.j@gmail.com
  * @since 2022/5/23 01:15
  */
-public class RpcRequestProcessor {
+public class RpcRequestThreadPoolProcessor {
 
     /**
      * 延迟构建线程池。
