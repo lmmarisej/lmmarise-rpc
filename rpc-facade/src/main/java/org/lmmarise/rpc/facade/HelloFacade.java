@@ -9,7 +9,7 @@ import org.lmmarise.rpc.common.RpcResponse;
  */
 public interface HelloFacade {
 
-    String hello(String name);
+    Object hello(String name);
 
     RpcFuture<RpcResponse> homework(String thing);
 

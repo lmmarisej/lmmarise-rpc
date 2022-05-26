@@ -102,7 +102,7 @@ public enum RpcConsumer {
 
             future.addListener((FutureListener<Channel>) futureListener -> {
                 if (futureListener.isSuccess()) {
-                    log.info("connect rpc server {} on port {} success.", serviceMetadata.getServiceAddress(), serviceMetadata.getServicePort());
+//                    log.info("connect rpc server {} on port {} success.", serviceMetadata.getServiceAddress(), serviceMetadata.getServicePort());
                     Channel channel = futureListener.getNow();
                     channel.writeAndFlush(protocol).sync();
                     channelPool.release(channel);

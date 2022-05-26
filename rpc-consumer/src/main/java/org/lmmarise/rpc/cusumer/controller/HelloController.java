@@ -1,13 +1,18 @@
 package org.lmmarise.rpc.cusumer.controller;
 
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
+import org.lmmarise.rpc.common.RpcResponse;
 import org.lmmarise.rpc.cusumer.annotation.RpcReference;
 import org.lmmarise.rpc.facade.HelloFacade;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.*;
+
+;
 
 /**
  * @author lmmarise.j@gmail.com
@@ -29,8 +34,11 @@ public class HelloController {
     private HelloFacade helloFacade;
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
-    public void sayHello() {
-        log.info(helloFacade.hello("rpc sayHello"));
+    public void sayHello(HttpServletResponse response) {
+        Promise<RpcResponse> rpcFuture = (Promise<RpcResponse>) helloFacade.hello("rpc sayHello");
+        rpcFuture.addListener(future -> {
+            response.getWriter().write(rpcFuture.getNow().getData().toString());
+        });
     }
 
     @RequestMapping(value = "/homework", method = RequestMethod.GET)
