@@ -66,9 +66,10 @@ public class RpcInvokerProxy implements InvocationHandler {
         protocol.setBody(request);
 
         RpcFuture<RpcResponse> future = new RpcFuture<>(new DefaultPromise<>(new DefaultEventLoop()), timeout);
-        RpcRequestHolder.REQUEST_MAP.put(requestId, future);                // 将本次请求在本地的存根，响应结果由 RpcResponseHandler 接收并写入
+        RpcRequestHolder.REQUEST_MAP.put(requestId, future);   // 将本次请求在本地的存根，响应结果由 RpcResponseHandler 接收并写入
 
-        // todo 增加扩展性
-        return future.getPromise();
+        RpcConsumer.INSTANCE.sendRequest(protocol, this.registryService);   // 启动本地网络服务，发起 RPC 请求
+
+        return future.getPromise();     // todo 增加扩展性
     }
 }

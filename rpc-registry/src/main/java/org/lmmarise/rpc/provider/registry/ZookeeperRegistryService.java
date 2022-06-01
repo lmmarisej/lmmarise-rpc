@@ -28,9 +28,9 @@ public class ZookeeperRegistryService implements RegistryService {
 
     private final ServiceDiscovery<ServiceMeta> serviceDiscovery;           // 由 ServiceDiscovery 完成服务的注册和发现
 
-    public ZookeeperRegistryService(String registryAddr) throws Exception {
+    public ZookeeperRegistryService(String registryAddress) throws Exception {
         CuratorFramework client = CuratorFrameworkFactory.newClient(
-                registryAddr,
+                registryAddress,
                 new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES)
         );
 

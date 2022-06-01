@@ -14,6 +14,7 @@ import org.lmmarise.rpc.protocol.MsgType;
 import org.lmmarise.rpc.protocol.RpcProtocol;
 import org.lmmarise.rpc.threadpool.RpcRequestProcessorThreadPool;
 import org.springframework.cglib.reflect.FastClass;
+import org.springframework.cglib.reflect.FastMethod;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -93,16 +94,16 @@ public class RpcRequestHandler extends SimpleChannelInboundHandler<RpcProtocol<R
         Object[] parameters = request.getParams();
 
         FastClass fastClass = FastClass.create(serviceClass);       // 生成子类
-        int methodIndex = fastClass.getIndex(methodName, parameterTypes);       // 定位方法
+        FastMethod fastMethod = fastClass.getMethod(methodName, parameterTypes);       // 定位方法
 
-        Object result = fastClass.invoke(methodIndex, serviceBean, parameters);// 基于委托进调用，不使用反射调用，也就能避开大量反射检查
+        Object result = fastMethod.invoke(fastClass.newInstance(), parameters);// 基于委托进调用，不使用反射调用，也就能避开大量反射检查
 
         // todo 异步调用必须设置超时时间
 
         // 返回类型是 Future，必须先将 Future 中的值取出来再返回
         if (result instanceof RpcFuture<?>) {
             RpcFuture<?> rpcFuture = ((RpcFuture<?>) result);
-            return rpcFuture.getPromise().get(rpcFuture.getTimeout(), TimeUnit.MILLISECONDS);// 阻塞地取值
+            return rpcFuture.getPromise().get(rpcFuture.getTimeout(), TimeUnit.MILLISECONDS);// 阻塞地取值 todo 改为时间轮处理
         }
         // 直接返回
         else {
